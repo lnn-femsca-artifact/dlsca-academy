@@ -111,7 +111,7 @@ test('PoI 原理实验：能够从分组数字推导 SNR 和 NICV', async ({ pag
   if (await page.getByRole('button',{name:'打开导航'}).isVisible()) await page.getByRole('button',{name:'打开导航'}).click();
   await page.getByRole('navigation',{name:'课程导航'}).getByRole('button',{name:/Trace \/ PoI 实验/}).click();
   await expect(page.getByRole('heading',{name:'为什么最大波形不等于最佳 PoI？'})).toBeVisible();
-  await page.locator('.poi-evidence').getByRole('button',{name:/#224/}).click();
+  await page.locator('.poi-evidence .poi-choose').first().getByRole('button',{name:/#224/}).click();
   await page.locator('.poi-evidence').getByRole('button',{name:/展开 SNR 与 NICV/}).click();
   await expect(page.locator('.poi-derivation')).toContainText('组内');
   await expect(page.locator('.poi-derivation')).toContainText('NICV');
