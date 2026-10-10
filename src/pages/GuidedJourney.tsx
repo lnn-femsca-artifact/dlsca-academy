@@ -31,6 +31,10 @@ function Activity({ step }: {step: JourneyStep}) {
   const [guess,setGuess]=useState('2A');
   const [m,setM]=useState<'id'|'hw'>('id');
   const [sampleCount,setSampleCount]=useState(1);
+  const [oldValue,setOldValue]=useState(0);
+  const [correctProbability,setCorrectProbability]=useState(0.1);
+  const [reference,setReference]=useState(true);
+  const [methodView,setMethodView]=useState<'snr'|'tvla'>('snr');
   const pb=isHex(p)?parseInt(p,16):null;
   const kb=isHex(k)?parseInt(k,16):null;
   const change=(f:(s:string)=>void)=>(e:React.ChangeEvent<HTMLInputElement>)=>f(e.target.value.replace(/[^0-9a-f]/gi,'').toUpperCase().slice(0,2));
@@ -48,6 +52,28 @@ function Activity({ step }: {step: JourneyStep}) {
       {step.activity==='guess'&&<button className="journey-inline" onClick={()=>setGuess(guess==='2A'?'2B':'2A')}>切换候选 0x2A / 0x2B</button>}
     </div>;
     case 'hamming': return <div className="journey-demo"><b>两个标签看的是同一个 V</b><div className="journey-equation">{Array.from({length:8},(_,i)=><button key={i} className="bitbox togglable" aria-label={`翻转第${7-i}位`} onClick={()=>setV(prev=>prev^(1<<(7-i)))}>{(v>>>(7-i))&1}</button>)}</div><div className="journey-equation"><button className={m==='id'?'journey-tab active':'journey-tab'} onClick={()=>setM('id')}>ID</button><button className={m==='hw'?'journey-tab active':'journey-tab'} onClick={()=>setM('hw')}>HW</button><strong>{m==='id'?v:hammingWeight(v)}</strong></div><p>点击任何一位翻转。ID 直接表示整个数；HW 只数 1。试着找到两个不同的 V，拥有相同 HW。</p></div>;
+    case 'profiles': return <div className="journey-demo">
+      <b>参考设备和目标设备为什么不能混成一套数据？</b>
+      <div className="journey-equation"><button className={reference?'journey-tab active':'journey-tab'} onClick={()=>setReference(true)}>参考设备 A</button><button className={!reference?'journey-tab active':'journey-tab'} onClick={()=>setReference(false)}>目标设备 B</button></div>
+      {reference?<div className="journey-worked"><b>建模</b><p>我们自己设置 K=0x2B，输入 P=0x2B，所以 V=SBox(0x00)=0x63。可以把 (Trace, 99) 当作监督训练样本。</p><p>这里 K 已知并不算恢复了密钥：训练设备的答案本来就由研究者设置。</p></div>:<div className="journey-error"><LockKeyhole size={18}/><p><b>攻击</b>：目标 B 的 K 未知。我们仍然能知道 P 与 Trace，但不能计算真实 V；必须让模型输出中间值概率并枚举假设 k。</p></div>}
+    </div>;
+    case 'distance': return <div className="journey-demo"><b>固定新状态 0x63，改变旧状态</b>
+      <label>旧状态：0x{hexByte(oldValue)} <input type="range" min="0" max="255" value={oldValue} onChange={e=>setOldValue(Number(e.target.value))}/></label>
+      <div className="journey-equation"><span>HW(0x63) = {hammingWeight(0x63)}</span><span>HD(old, 0x63) = {hammingWeight(oldValue^0x63)}</span></div>
+      <button className="journey-inline" onClick={()=>setOldValue(oldValue===0x63?0x00:0x63)}>切换旧值 0x63 / 0x00</button>
+      <p>你会看到新值的 HW 保持 4，HD 却随着旧值变化。这说明 HD 不是单独一个 V 的属性。</p>
+    </div>;
+    case 'training': return <div className="journey-demo"><b>为什么模型需要调整自己的概率？观察交叉熵</b>
+      <p>假设训练样本的正确类别是 99。下面滑杆表示模型给类别 99 的概率，计算损失 −log(p)。真实训练时网络会通过梯度更新调整模型参数。</p>
+      <label>正确类别概率 p={correctProbability.toFixed(2)}<input type="range" min="0.01" max="0.99" step="0.01" value={correctProbability} onChange={e=>setCorrectProbability(Number(e.target.value))}/></label>
+      <div className="journey-equation"><span>真实标签 y = 99</span><span>p(y) = {correctProbability.toFixed(2)}</span><strong>−log(p) = {(-Math.log(correctProbability)).toFixed(3)}</strong></div>
+      <p>概率越接近 1，损失越小；模型要从 Trace 中学会区分标签，而不是预先读取目标设备的真实 K。</p>
+    </div>;
+    case 'methods': return <div className="journey-demo"><b>先决定你要回答哪一个实验问题</b>
+      <div className="journey-equation"><button className={methodView==='snr'?'journey-tab active':'journey-tab'} onClick={()=>setMethodView('snr')}>目标标签相关吗？</button><button className={methodView==='tvla'?'journey-tab active':'journey-tab'} onClick={()=>setMethodView('tvla')}>两组运行有差异吗？</button></div>
+      {methodView==='snr'?<p>目标标签明确时，参考设备的 SNR/NICV 可以衡量“同一时刻的测量是否随这个标签变化”。需要知道每条参考 Trace 的分类标签。</p>:<p>普通 Fixed/Random TVLA 比较预设两组数据的信号差异，差异可能来自明文装载，不一定来自目标中间值。它不自动证明最佳 PoI。</p>}
+      <p>先明确问题，再决定统计方法；不同问题的统计峰不能直接被视为同一个答案。</p>
+    </div>;
     case 'trace':case 'poi': return <div className="journey-demo"><b>观察波形，再揭示哪些位置被人为设置为“数据相关”</b><MiniTrace reveal={reveal}/><button className="journey-inline" onClick={()=>setReveal(s=>!s)}><Eye size={16}/>{reveal?'先隐藏答案':'揭示信号生成机制'}</button><p>注意：这只能用来建立直觉。真实研究需要依据实现时序、标签统计与独立验证集，而不是知道模拟器预设答案。</p></div>;
     case 'rank': return <div className="journey-demo"><b>用最小例子理解“两条证据胜过一条”</b><div className="journey-equation"><span>候选 A</span><strong>{(sampleCount===1?.6:.42).toFixed(2)}</strong><span>候选 B</span><strong>{(sampleCount===1?.3:.03).toFixed(2)}</strong></div><button className="journey-inline" onClick={()=>setSampleCount(sampleCount===1?2:1)}>{sampleCount===1?'加入第二条 Trace（A×0.7，B×0.1）':'返回只有一条 Trace'}</button><p>候选 A 与 B 的分数来自各自假设类别的模型概率。多条迹线时，将匹配概率相乘（或 log 相加）。</p></div>;
     case 'workflow': return <div className="journey-demo"><b>完整推断链：从已知到未知</b><div className="journey-chain">{['已知参考 K','计算训练标签','学习 Trace → 概率','目标 K 未知','遍历全部 k','多迹线累计','子密钥排序'].map((s,i)=><div key={s}><span>{i+1}</span>{s}</div>)}</div><p>请指出：哪一步使用参考真实密钥？哪一步只能使用候选？哪一步可以知道实际答案但只用它计算 Rank？</p></div>;
