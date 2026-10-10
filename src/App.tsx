@@ -43,8 +43,8 @@ export default function App() {
   const [lessonNumber,setLessonNumber]=useState('00');
   const [menuOpen,setMenuOpen]=useState(false);
   const [completed,setCompleted]=useState<string[]>(()=>{
-    try {const raw=localStorage.getItem('dlsca:completed');return raw?JSON.parse(raw):[];} catch{return [];} });
-  useEffect(()=>{try{localStorage.setItem('dlsca:completed',JSON.stringify(completed));}catch{ /* private browsing */ }},[completed]);
+    try {const raw=localStorage.getItem('dlsca:lesson-practice-v02');return raw?JSON.parse(raw):[];} catch{return [];} });
+  useEffect(()=>{try{localStorage.setItem('dlsca:lesson-practice-v02',JSON.stringify(completed));}catch{ /* private browsing */ }},[completed]);
   const current = useMemo(()=>page==='lesson'?{label:`第 ${lessonNumber} 章 · 正文`}:links.find(link=>link.page===page)!,[page,lessonNumber]);
   const go=(next:Page)=>{setPage(next);setMenuOpen(false);window.scrollTo({top:0,behavior:'smooth'});};
   const toggle=(id:string)=>setCompleted(s=>s.includes(id)?s.filter(x=>x!==id):[...s,id]);
