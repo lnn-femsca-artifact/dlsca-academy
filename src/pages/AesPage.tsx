@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { ArrowRight, Info, RotateCcw, ShieldCheck } from 'lucide-react';
 import { encryptAES128, formatHex, hammingWeight, hexByte, INV_SBOX, parseHexBytes, SBOX } from '../domain/aes';
+import LabGuide from '../components/LabGuide';
 
 const DEFAULT_P = '00112233445566778899AABBCCDDEEFF';
 const DEFAULT_K = '000102030405060708090A0B0C0D0E0F';
@@ -30,6 +31,7 @@ export default function AesPage() {
   const v = SBOX[xor];
   return <div className="page-content">
     <div className="page-heading"><span className="eyebrow">LAB 01 · CRYPTOGRAPHY</span><h1>让 AES 的内部运算<br/><em>变得看得见。</em></h1><p>先不要急着攻击。亲手更改明文与密钥，观察一个字节如何穿过 XOR、SBox，以及完整 AES-128 的 10 轮变换。</p></div>
+    <LabGuide kind="aes"/>
     <section className="panel">
       <div className="section-bar"><div><span className="step-tag">01 / BYTE LAB</span><h2>第一轮的一个字节</h2></div><button className="quiet-button" onClick={()=>{setPByte('2B');setKByte('2B');}}><RotateCcw size={15}/> 重置</button></div>
       <div className="byte-inputs"><ByteField label="明文字节 P" value={pByte} update={setPByte}/><div className="operator">⊕</div><ByteField label="密钥字节 K" value={kByte} update={setKByte}/><div className="operator">→</div><div className="result-tile"><span>异或结果</span><b>{validByte ? hexByte(xor) : '--'}</b></div><div className="operator"><ArrowRight size={20}/></div><div className="result-tile tinted"><span>敏感值 V = SBox(X)</span><b>{validByte ? hexByte(v) : '--'}</b></div></div>
