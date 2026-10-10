@@ -1,0 +1,14 @@
+import { useState } from 'react';
+import { ArrowLeft, ArrowRight, BookOpen, CheckCircle2, CircleHelp, FlaskConical, Info } from 'lucide-react';
+import { chapters } from '../content/chapters';
+import { lessonDetails } from '../content/lessonDetails';
+export default function LessonPage({ number, back, openLab, onComplete, completed }: {number:string;back:()=>void;openLab:(page:'aes'|'poi'|'attack')=>void;onComplete:()=>void;completed:boolean}) {
+  const chapter = chapters.find(c=>c.number===number)!;
+  const lesson = lessonDetails[number];
+  const [answer,setAnswer] = useState<number|null>(null);
+  if(!lesson)return <div className="page-content"><div className="page-heading"><h1>{chapter.title}</h1><p>本章长篇讲义正在建设中。你仍可从课程地图查看学习目标与已开放的实验。</p></div><button className="outlined-button" onClick={back}>返回课程地图</button></div>;
+  return <div className="page-content lesson-page"><button className="back-link" onClick={back}><ArrowLeft size={16}/> 返回课程地图</button><div className="page-heading"><span className="eyebrow">CHAPTER {chapter.number} · LEARN THE WHY</span><h1>{chapter.title}</h1><p>{lesson.lead}</p></div><div className="lesson-intro"><BookOpen size={21}/><div><b>阅读方式：先理解原因，再看定义和公式。</b><span>每个重点都有一个“为什么需要它”的引导；最后一题需要亲自判断。</span></div></div>
+    {lesson.sections.map((section,index)=><section className="panel lesson-section" key={index}><span className="step-tag">SECTION {String(index+1).padStart(2,'0')}</span><h2>{section.title}</h2><div className="why-box"><CircleHelp size={18}/><span><b>为什么要学这一点？</b> {section.why}</span></div>{section.body.map((p,i)=><p className="lesson-paragraph" key={i}>{p}</p>)}{section.formula&&<div className="lesson-formula"><small>关键关系</small><code>{section.formula}</code></div>}{section.example&&<div className="lesson-example"><b>带着具体数字理解</b><p>{section.example}</p></div>}{section.warning&&<div className="lesson-warning"><Info size={17}/><span>{section.warning}</span></div>}</section>)}
+    <section className="panel lesson-quiz"><span className="step-tag">CHECK FOR UNDERSTANDING</span><h2>你真的理解了吗？</h2><h3>{lesson.quiz.question}</h3><div className="choice-list">{lesson.quiz.choices.map((choice,i)=><button key={i} onClick={()=>setAnswer(i)} className={answer===i?(i===lesson.quiz.correct?'correct':'incorrect'):''}><span>{String.fromCharCode(65+i)}</span>{choice}{answer===i&&<CheckCircle2 size={17}/>}</button>)}</div>{answer!==null&&<div className="quiz-explanation"><b>{answer===lesson.quiz.correct?'回答正确！':'再想一想。'}</b><p>{lesson.quiz.explanation}</p></div>}</section><div className="lesson-actions"><button className="outlined-button" onClick={back}><ArrowLeft size={16}/> 回到知识地图</button>{chapter.destination&&<button className="primary-button" onClick={()=>openLab(chapter.destination!)}><FlaskConical size={17}/> 去对应实验 <ArrowRight size={16}/></button>}<button className="outlined-button" onClick={onComplete}>{completed?'✓ 已标记完成':'标记我已理解'}</button></div>
+  </div>;
+}
