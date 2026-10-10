@@ -116,3 +116,14 @@ test('PoI 原理实验：能够从分组数字推导 SNR 和 NICV', async ({ pag
   await expect(page.locator('.poi-derivation')).toContainText('组内');
   await expect(page.locator('.poi-derivation')).toContainText('NICV');
 });
+
+test('PoI 不止比较峰值：可运行选点与独立验证的对照表', async ({ page }) => {
+  await page.goto('/');
+  if (await page.getByRole('button',{name:'打开导航'}).isVisible()) await page.getByRole('button',{name:'打开导航'}).click();
+  await page.getByRole('navigation',{name:'课程导航'}).getByRole('button',{name:/Trace \/ PoI 实验/}).click();
+  await page.getByRole('button',{name:'开始独立窗口验证'}).click();
+  await expect(page.locator('.poi-validation-table tbody tr')).toHaveCount(6);
+  await expect(page.locator('.poi-validation-table')).toContainText('随机窗口基线');
+  await expect(page.locator('.poi-validation-table')).toContainText('无关峰基线');
+  await expect(page.locator('.poi-validation-warning')).toContainText('不是 CNN/LNN');
+});
