@@ -3,6 +3,7 @@ import { Activity, Eye, Info, SlidersHorizontal } from 'lucide-react';
 import { calculatePoiMetrics, generateTraces, POI_GUIDE, topPoi, type PoiMethod } from '../domain/leakage';
 import LineChart from '../components/LineChart';
 import LabGuide from '../components/LabGuide';
+import PoiEvidenceLab from '../components/PoiEvidenceLab';
 
 export default function PoiPage() {
   const [method, setMethod] = useState<PoiMethod>('snr');
@@ -18,6 +19,7 @@ export default function PoiPage() {
     <div className="page-heading"><span className="eyebrow">LAB 02 · SIGNAL ANALYSIS</span><h1>Trace 里那么多采样点，<br/><em>到底该看哪里？</em></h1><p>在一个明确可重复的合成侧信道实验里，亲自观察噪声、错位和 PoI 统计方法怎样影响泄漏定位。</p></div>
     <LabGuide kind="poi"/>
     <div className="disclaimer"><Info size={18}/><span>以下波形由公开的数学规则<strong>实时合成</strong>，不是示波器的真实测量结果；本实验使用已知建模密钥生成标签。</span></div>
+    <PoiEvidenceLab/>
     <section className="panel">
       <div className="section-bar"><div><span className="step-tag">01 / CONTROL THE CHANNEL</span><h2>先改变泄漏环境</h2></div><SlidersHorizontal size={19} color="#7a899b"/></div>
       <div className="slider-grid"><label className="slider-block"><span><b>高斯噪声强度</b><em>σ = {noise.toFixed(2)}</em></span><input type="range" min="0.2" max="1.8" step="0.1" value={noise} onChange={e=>setNoise(Number(e.target.value))}/><small>越大，单条迹线越难辨认类别。</small></label><label className="slider-block"><span><b>随机时间错位</b><em>±{jitter} 样本</em></span><input type="range" min="0" max="14" step="1" value={jitter} onChange={e=>setJitter(Number(e.target.value))}/><small>错位通常会让固定时间位置的泄漏峰变宽、变弱。</small></label></div>
