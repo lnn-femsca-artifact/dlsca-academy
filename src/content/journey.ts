@@ -140,7 +140,7 @@ export const journey: JourneyStep[] = [
  known:['标签 Y（对参考设备）','Fixed/Random 分组（如果设计了）'],unknown:['哪些候选窗口真正提高泛化攻击表现'],
  terms:[{name:'SNR',meaning:'信号（类别间变化）相对组内噪声的比值'},{name:'NICV',meaning:'标签所解释的采样方差占总方差的比例'},{name:'TVLA',meaning:'常用两组统计检验来检测数据相关差异的方法'}],
  activity:'methods',
- checkpoint:{prompt:'TVLA 在某个采样点出现大峰，可以得出哪个结论？',options:['可以直接确认它是目标 SBox 的最佳 PoI','只说明指定分组存在明显统计差异，需要进一步归因','可以直接读出密钥字节'],answer:1,why:['TVLA 不能自动确定具体中间值泄漏来源。','正确。还要结合时序、标签模型和验证集攻击。','TVLA 不是密钥输出接口。']},activity:'poi'
+ checkpoint:{prompt:'TVLA 在某个采样点出现大峰，可以得出哪个结论？',options:['可以直接确认它是目标 SBox 的最佳 PoI','只说明指定分组存在明显统计差异，需要进一步归因','可以直接读出密钥字节'],answer:1,why:['TVLA 不能自动确定具体中间值泄漏来源。','正确。还要结合时序、标签模型和验证集攻击。','TVLA 不是密钥输出接口。']}
 },
 {
  id:'training',chapter:'第七幕 · 从 Trace 到概率',title:'模型为什么不是直接猜密钥？',question:'监督学习怎样从迹线获得中间值的信息？',
