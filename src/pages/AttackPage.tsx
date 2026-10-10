@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { ArrowRight, Info, Lock, Unlock } from 'lucide-react';
+import { ArrowRight, Info, KeyRound, Lock, Unlock } from 'lucide-react';
 import { hammingWeight, hexByte, SBOX } from '../domain/aes';
 import { runAttack, sortedCandidates, type AttackMode } from '../domain/attack';
 import LineChart from '../components/LineChart';
