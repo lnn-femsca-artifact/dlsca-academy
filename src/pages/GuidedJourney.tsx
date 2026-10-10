@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, ArrowRight, BookOpen, CheckCircle2, ChevronDown, CircleHelp, Eye, FlaskConical, GraduationCap, Info, LockKeyhole, RotateCcw, Sparkles, TriangleAlert } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { ArrowLeft, ArrowRight, CheckCircle2, ChevronDown, CircleHelp, Eye, Info, LockKeyhole, TriangleAlert } from 'lucide-react';
 import { journey, type JourneyStep } from '../content/journey';
 import { SBOX, INV_SBOX, hexByte, hammingWeight } from '../domain/aes';
 import './GuidedJourney.css';
@@ -33,8 +33,6 @@ function Activity({ step }: {step: JourneyStep}) {
   const [sampleCount,setSampleCount]=useState(1);
   const pb=isHex(p)?parseInt(p,16):null;
   const kb=isHex(k)?parseInt(k,16):null;
-  const x=pb!==null&&kb!==null?pb^kb:null;
-  const value=x===null?null:SBOX[x];
   const change=(f:(s:string)=>void)=>(e:React.ChangeEvent<HTMLInputElement>)=>f(e.target.value.replace(/[^0-9a-f]/gi,'').toUpperCase().slice(0,2));
   switch(step.activity){
     case 'secret': return <div className="journey-demo"><b>钥匙与盒子</b><div className="journey-equation"><span>公开规则 AES</span><span>+</span><span className="key-tag">{known?'密钥 0x2B':'秘密密钥 ?'}</span><span>→</span><span>加密结果</span></div><button className="journey-inline" onClick={()=>setKnown(s=>!s)}><Eye size={16}/>{known?'重新隐藏密钥':'在参考设备上揭示密钥'}</button><p>注意：知道参考设备的密钥，是为了建立训练答案；不会让我们自动知道目标设备的密钥。</p></div>;
