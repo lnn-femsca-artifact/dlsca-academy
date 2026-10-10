@@ -1,0 +1,51 @@
+export type Chapter = {
+  number: string; title: string; subtitle: string; duration: string; status: 'available' | 'planned';
+  ideas: string[]; misconception: string; checkpoint: string; destination?: 'aes' | 'poi' | 'attack';
+};
+export const chapters: Chapter[] = [
+  { number:'00', title:'进入密码学世界',subtitle:'先学 bit、byte、十六进制、异或和概率', duration:'25 分钟',status:'available', destination:'aes',
+    ideas:['1 byte = 8 bit；一个字节有 256 种取值。','XOR 的核心性质是 (a ⊕ b) ⊕ b = a。','“概率分布”是对多个可能答案的置信程度描述，不能直接当作确定事实。'],
+    misconception:'十六进制 0x10 不是十进制 10，而是 16。',checkpoint:'请解释为什么 x ⊕ k ⊕ k = x。'},
+  { number:'01',title:'AES 到底怎样加密？',subtitle:'看懂 128-bit 状态、10 轮、SBox 与轮密钥',duration:'45 分钟',status:'available',destination:'aes',
+    ideas:['AES-128：128-bit 数据块、128-bit 密钥、10 轮加密。','初始 AddRoundKey 之后，各轮执行 SubBytes、ShiftRows、MixColumns 和 AddRoundKey；第 10 轮不执行 MixColumns。','SBox 是公开且可逆的 8-bit 置换；密钥扩展同样是公开算法，但需要密钥。'],
+    misconception:'AES 的安全性不是靠隐藏 SBox 的查找表。',checkpoint:'最后一轮为什么没有 MixColumns？能否说出各步骤处理的对象？'},
+  { number:'02',title:'从 AES 到侧信道',subtitle:'设备为何会泄漏？Trace 究竟是什么？',duration:'35 分钟',status:'available',destination:'poi',
+    ideas:['密码算法的安全性与其物理实现是否泄漏是两个问题。','Trace 是随时间采样的功耗或电磁信号，通常同时包含无关活动和噪声。','泄漏与数据可能相关，但不会直接把密钥写在波形上。'],
+    misconception:'发现一个波形峰值，不代表那里一定正在执行 SBox。',checkpoint:'为什么只知道公开算法不能恢复密钥，但多了 Trace 可能有所不同？'},
+  { number:'03',title:'敏感中间值：连接的桥梁',subtitle:'第一轮与最后轮；已知、未知、候选密钥',duration:'55 分钟',status:'available',destination:'aes',
+    ideas:['第一轮可选 V=SBox(P[j] ⊕ K0[j])，最后轮可基于密文构造逆 SBox 相关中间值。','建模阶段能用已知建模密钥算真实标签；攻击阶段没有目标真实密钥，枚举 k 得到假设中间值。','完整末轮密钥对 AES-128 可逆推主密钥，但仅知道其中一个字节远远不够。'],
+    misconception:'“攻击时使用 K10”不意味着攻击者已经知道正确 K10；公式里的 k 是候选猜测。',checkpoint:'为什么不知道真实目标密钥，仍能为每一个候选 k 算出假设中间值？'},
+  { number:'04',title:'泄漏模型与训练标签',subtitle:'ID、HW、HD 为何是不同的实验选择？',duration:'40 分钟',status:'available',destination:'poi',
+    ideas:['敏感中间值回答“攻击什么变量”，物理泄漏假设回答“它怎样影响测量”。','ID 使用原始 8-bit 值作 256 类标签；HW 使用 1 的个数作 9 类标签。','HD=HW(old ⊕ new)；不提供旧状态就不能定义具体 HD。'],
+    misconception:'DLSCA 使用 ID 标签不意味着物理泄漏与中间值的整数大小成正比。',checkpoint:'若 V=0x63，ID 与 HW 标签分别是什么？'},
+  { number:'05',title:'采集 Trace 与定位泄漏',subtitle:'触发、采样、对齐、分割、时序定位',duration:'55 分钟',status:'available',destination:'poi',
+    ideas:['GPIO 触发可帮助定位代码执行窗口，但不等于精确定位数据相关泄漏。','一次完整捕获可覆盖多轮；不同目标中间值往往要研究不同的时间窗口。','错位会把泄漏峰值摊平；对齐方法不能用最终攻击集真实标签偷看答案。'],
+    misconception:'不存在适用于所有 AES 实现的“前 10% 一定是第一轮”规则。',checkpoint:'如果没有源码，如何从广泛采集窗口缩小 PoI 搜索范围？'},
+  { number:'06',title:'PoI 选择实验室',subtitle:'TVLA、SNR、NICV、相关性：对比用途和限制',duration:'60 分钟',status:'available',destination:'poi',
+    ideas:['SNR 与 NICV 在此实验中使用已知 HW 标签做类条件统计。','Fixed-vs-Random TVLA 衡量分组差异，不自动说明差异来自目标 SBox。','PoI 不能只凭峰值选定；还要考虑稳定性、窗口长度与独立验证集上的攻击表现。'],
+    misconception:'“最大 TVLA 峰值 = 最优密钥恢复点”是错误结论。',checkpoint:'目标设备真实密钥未知时，为什么不能直接用它的真实 SBox 标签计算监督式 SNR？'},
+  { number:'07',title:'从原始数据到监督学习',subtitle:'建模集 / 验证集 / 攻击集和数据泄漏',duration:'45 分钟',status:'available',destination:'attack',
+    ideas:['已知建模密钥生成训练标签，不代表可以把目标密钥塞进攻击程序。','同一条迹线不能同时作为训练样本和宣称完全独立的测试样本。','数据预处理统计量、PoI 选择与超参数调节都应遵循实验评估协议。'],
+    misconception:'训练准确率高并不能单独证明真实密钥可恢复。',checkpoint:'为什么不能根据攻击集的真实密钥排名反复调整所有模型参数后仍称作独立测试？'},
+  { number:'08',title:'CNN 与深度学习模型',subtitle:'分类、交叉熵、Softmax、泛化与校准',duration:'55 分钟',status:'planned',destination:'attack',
+    ideas:['模型从 Trace 学习敏感中间值的概率表示。','模型输出的概率分布保留了单个 argmax 丢弃的信息。','CNN/LNN/Transformer 在特征建模机制上不同，候选密钥推断的数学关系可以保持一致。'],
+    misconception:'256 分类不是“直接把密钥当标签”。',checkpoint:'为什么固定建模密钥仍然可以产生 256 种 SBox 中间值标签？'},
+  { number:'09',title:'从 256 类到 256 个候选密钥',subtitle:'假设中间值、概率查表、log 分数与排名',duration:'60 分钟',status:'available',destination:'attack',
+    ideas:['对每条 Trace 模型只需预测一次概率分布；之后的 256 候选评分是查表与累积。','S_N(k)=Σ log p_i[SBox(P_i ⊕ k)] 是 ID 第一轮常用评分形式。','多迹线累积需要目标密钥保持不变；单条预测错误不代表最终恢复失败。'],
+    misconception:'候选密钥对应的概率不是模型直接输出的“密钥后验概率”。',checkpoint:'为什么使用 log 概率之和，而不是不断相乘许多小概率？'},
+  { number:'10',title:'如何科学地报告攻击效果？',subtitle:'Rank、GE/PGE、重采样、成功率与可复现',duration:'40 分钟',status:'planned',destination:'attack',
+    ideas:['Rank 0 表示在该轮实验中真实子密钥当前排名第一。','GE/PGE 要看具体论文的定义、排名起点以及重复实验方法。','合成曲线不等于数据集实测性能；实验应保留 seed、版本和评估规则。'],
+    misconception:'Rank 首次到 0 不代表后续每一步都保证保持 0。',checkpoint:'为什么只报告一次排序成功，不能代表稳定成功率？'},
+  { number:'11',title:'从教程走向科研',subtitle:'掩码、错位、跨设备、LNN 与真实数据集',duration:'80 分钟',status:'planned',destination:'poi',
+    ideas:['跨设备时相同中间值可能具有不同的物理泄漏分布。','掩码/随机时序等防护可能使简单标签-迹线关联弱化。','ASCAD 等公开数据可用于可复现的深度学习侧信道实验，但必须正确理解其目标泄漏和数据划分。'],
+    misconception:'合成单字节实验成功，不代表一定能直接攻击受保护设备或恢复完整 128-bit 主密钥。',checkpoint:'设计一次跨设备研究时，什么数据不能用于监督选择目标模型？'},
+];
+
+export const coreQuestions = [
+  {question:'SBox 既然可以逆运算，为什么不能只靠明文求密钥？',answer:'因为你不知道目标设备的真实中间值 V。InvSBox 只有拿到正确的 V 后才能用于 K=P⊕InvSBox(V)。'},
+  {question:'最后一轮攻击需要 K10，是不是就意味着已经知道了目标密钥？',answer:'建模阶段的真实 K10 已知，是用来生成训练标签；攻击阶段的 K10 未知，用 0–255 的 k 作为候选逐一计算假设值。'},
+  {question:'攻击第一轮必须是“已知 P、未知 C”吗？',answer:'不必须。主动采集实验常常同时记录 P 和 C；第一轮假设通常依赖 P，最后一轮假设通常依赖 C。'},
+  {question:'为什么 PoI 不能只看 TVLA 的最大峰值？',answer:'Fixed/Random TVLA 检测组间统计差异，这个差异可能来自明文加载或其他数据依赖操作，不等于特定目标中间值的最优密钥恢复采样点。'},
+  {question:'256 类 ID 与 9 类 HW 谁更“高级”？',answer:'没有绝对排序。ID 保留全部字节区分信息但更难分类；HW 使用物理假设压缩类别，但不同中间值会映射到同一个 HW。需要用独立实验评价。'},
+  {question:'模型预测出了最可能的中间值，为什么不直接做一次逆运算？',answer:'单条迹线的最大概率类别经常会错。保留全部类别概率并跨多条迹线对候选密钥累积，可以利用单次 argmax 丢弃的信息。'},
+];
