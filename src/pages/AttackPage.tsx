@@ -3,6 +3,7 @@ import { ArrowRight, Info, KeyRound, Lock, Unlock } from 'lucide-react';
 import { hammingWeight, hexByte, SBOX } from '../domain/aes';
 import { runAttack, sortedCandidates, type AttackMode } from '../domain/attack';
 import LineChart from '../components/LineChart';
+import LabGuide from '../components/LabGuide';
 export default function AttackPage() {
   const [n, setN] = useState(48);
   const [noise, setNoise] = useState(1.2);
@@ -21,6 +22,7 @@ export default function AttackPage() {
   const rankCurve = run.rankByN.slice(1,n+1);
   return <div className="page-content">
     <div className="page-heading"><span className="eyebrow">LAB 03 · KEY RECOVERY</span><h1>模型只预测中间值，<br/><em>怎么变成密钥？</em></h1><p>模拟器真正为 256 个候选密钥计算假设中间值、读取概率并累积 log 分数。你可以逐条加入 Trace，观察排名如何变化。</p></div>
+    <LabGuide kind="attack"/>
     <div className="disclaimer"><Info size={18}/><span>这里的概率由<strong>透明的高斯似然玩具模型</strong>计算，不是已经训练完成的深度神经网络；它只用于演示后续密钥推断的数学过程。</span></div>
     <section className="panel"><div className="section-bar"><div><span className="step-tag">01 / SET THE EXPERIMENT</span><h2>改变分类标签和噪声</h2></div><span className="source-pill"><Lock size={13}/> 目标密钥对攻击器不可见</span></div>
       <div className="method-tabs"><button className={mode==='id'?'selected':''} onClick={()=>setMode('id')}>ID · 256 类</button><button className={mode==='hw'?'selected':''} onClick={()=>setMode('hw')}>HW · 9 类</button></div>

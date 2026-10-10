@@ -1,0 +1,25 @@
+.deep-section{padding:clamp(20px,3vw,32px)!important}
+.deep-story{padding-top:14px}
+.deep-paragraph{display:flex;align-items:start;gap:13px;line-height:2;font-size:.99rem;max-width:830px}
+.deep-paragraph>span{font-variant-numeric:tabular-nums;color:#0d9488;font-weight:700;font-size:.8rem;margin-top:4px;flex:none}
+.deep-continue{display:inline-flex;align-items:center;gap:9px;background:rgba(13,148,136,.08);border:1px solid rgba(13,148,136,.3);border-radius:10px;padding:11px 15px;color:#0d9488;cursor:pointer;font-weight:650;font-size:.89rem;margin-top:12px}
+.deep-continue:disabled{cursor:not-allowed;opacity:.42}
+.deep-investigation{border-top:1px solid var(--border,#e0e4e9);margin-top:24px;padding-top:24px}
+.deep-probe-heading{display:flex;align-items:start;gap:13px}
+.deep-probe-heading svg{color:#0d9488;flex:none;margin-top:5px}
+.deep-probe-heading small{color:var(--muted,#8290a3);font-size:.76rem}
+.deep-probe-heading h3{font-size:1.08rem;margin:5px 0 13px;line-height:1.65}
+.deep-try{line-height:1.8;background:var(--surface-secondary,rgba(120,130,150,.07));border-radius:9px;padding:13px 16px}
+.deep-investigation>label{display:block;font-size:.88rem;margin:17px 0 9px}
+.deep-investigation textarea{display:block;width:100%;box-sizing:border-box;border-radius:11px;border:1px solid var(--border,#dde3ea);background:var(--surface,#fff);color:inherit;padding:13px;line-height:1.85;font:inherit;resize:vertical}
+.deep-answer{margin-top:18px;border-left:3px solid #0d9488;background:rgba(13,148,136,.06);border-radius:8px;padding:17px 20px}
+.deep-answer ol{padding-left:22px}
+.deep-answer li{margin:9px 0;line-height:1.9}
+.deep-answer p{line-height:1.85}
+.deep-caution{font-size:.8rem;color:var(--muted,#8290a3)}
+.deep-station-summary{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:16px;border:1px solid var(--border,#dde3ea);border-radius:12px;margin:18px 0 23px}
+.deep-station-summary span{font-size:.79rem;color:var(--muted,#8290a3)}
+.deep-station-summary strong{font-size:.85rem}
+.lesson-actions button:disabled{opacity:.4;cursor:not-allowed}
+.lesson-disclaimer{display:flex;gap:8px;align-items:start;font-size:.79rem;color:var(--muted,#8290a3);line-height:1.7;margin-top:18px}
+.lesson-disclaimer svg{flex:none}

@@ -1,0 +1,27 @@
+.lab-guide{border:1px solid rgba(13,148,136,.25);border-radius:17px;margin:24px 0 28px;background:var(--surface,#fff);overflow:hidden}
+.lab-guide-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 24px;background:rgba(13,148,136,.05)}
+.lab-guide-bar h2{font-size:1.04rem;display:flex;align-items:center;gap:8px;line-height:1.5;margin:6px 0 0}
+.lab-guide-bar h2 svg{color:#0d9488;flex:none}
+.lab-guide-bar>button{border:1px solid rgba(13,148,136,.28);border-radius:9px;color:#0d9488;background:transparent;padding:8px 12px;display:flex;align-items:center;gap:7px;cursor:pointer;flex:none}
+.lab-guide-body{padding:22px 24px 24px}
+.lab-guide-purpose{display:flex;gap:8px;font-size:.89rem;color:var(--muted,#8290a3);line-height:1.8;margin:0 0 20px}
+.lab-guide-purpose svg{flex:none;margin-top:5px}
+.lab-guide-steps{display:flex;gap:8px;margin-bottom:20px}
+.lab-guide-steps button{height:30px;width:30px;border-radius:9px;border:1px solid var(--border,#dce4e9);color:inherit;background:transparent;cursor:pointer}
+.lab-guide-steps button.current{border-color:#0d9488;color:#0d9488;background:rgba(13,148,136,.1);font-weight:700}
+.lab-guide-body h3{font-size:1.11rem;line-height:1.5}
+.lab-guide-body>p{line-height:1.8}
+.lab-guide-instruction,.lab-guide-reason{padding:14px 16px;border-radius:10px;margin:10px 0;line-height:1.75;font-size:.89rem}
+.lab-guide-instruction{background:rgba(53,126,202,.08)}
+.lab-guide-reason{background:rgba(13,148,136,.08)}
+.lab-guide-instruction p,.lab-guide-reason p{margin:5px 0 0}
+.lab-guide-body details{border-bottom:1px solid var(--border,#dce4e9);padding:12px 0}
+.lab-guide-body summary{cursor:pointer;font-weight:650;font-size:.86rem}
+.lab-guide-body details p{font-size:.86rem;line-height:1.8;color:var(--muted,#8290a3)}
+.lab-guide-nav{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:20px}
+.lab-guide-nav button{display:flex;align-items:center;gap:7px;border:1px solid var(--border,#dce4e9);border-radius:9px;padding:9px 13px;background:transparent;color:inherit;cursor:pointer}
+.lab-guide-nav button:disabled{opacity:.35;cursor:not-allowed}
+.lab-guide-nav>span{font-size:.79rem;color:var(--muted,#8290a3)}
+.lab-guide-complete{display:flex;align-items:start;gap:7px;font-size:.78rem;color:var(--muted,#8290a3);line-height:1.5}
+.lab-guide-complete svg{flex:none;color:#0d9488}
+@media(max-width:650px){.lab-guide-bar{padding:15px}.lab-guide-body{padding:16px}.lab-guide-bar h2{font-size:.94rem}}
