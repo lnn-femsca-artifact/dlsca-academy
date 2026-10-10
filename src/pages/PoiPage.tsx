@@ -4,6 +4,7 @@ import { calculatePoiMetrics, generateTraces, POI_GUIDE, topPoi, type PoiMethod 
 import LineChart from '../components/LineChart';
 import LabGuide from '../components/LabGuide';
 import PoiEvidenceLab from '../components/PoiEvidenceLab';
+import PoiValidationPanel from '../components/PoiValidationPanel';
 
 export default function PoiPage() {
   const [method, setMethod] = useState<PoiMethod>('snr');
@@ -37,6 +38,7 @@ export default function PoiPage() {
       <label className="slider-block roomy"><span><b>候选窗口宽度</b><em>{windowSize} 点</em></span><input type="range" min="8" max="80" step="2" value={windowSize} onChange={e=>setWindowSize(Number(e.target.value))}/></label>
       <div className="teaching-note"><Info size={18}/><p><b>正确解读：</b>{info.caveat} 需要在独立验证数据上比较候选窗口的实际分类和密钥恢复表现，不能只看当前指标最大值。</p></div>
     </section>
+    <PoiValidationPanel noise={noise} jitter={jitter} windowSize={windowSize}/>
     <section className="micro-lesson"><div className="micro-icon"><Info size={20}/></div><div><b>为什么同一条 Trace 能攻击不同 AES 轮次？</b><p>如果完整采集窗口覆盖了多个轮次，可在不同运算附近提取不同时间段。PoI 统计峰值表示信号与指定数据标签的关联，并不能独立证明硬件“此刻执行了哪条 SBox 指令”。</p></div></section>
   </div>;
 }
