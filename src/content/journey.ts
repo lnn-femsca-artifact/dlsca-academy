@@ -4,7 +4,7 @@ export type JourneyStep = {
  id: string; chapter: string; title: string; question: string; situation: string[];
  why: string[]; example: string; counterexample: string; recap: string;
  known: string[]; unknown: string[]; terms: {name:string;meaning:string}[];
- checkpoint: Checkpoint; activity?: 'secret'|'bits'|'xor'|'sbox'|'hamming'|'trace'|'poi'|'guess'|'rank'|'workflow';
+ checkpoint: Checkpoint; activity?: 'secret'|'bits'|'xor'|'sbox'|'hamming'|'trace'|'poi'|'guess'|'rank'|'workflow'|'profiles'|'distance'|'training'|'methods';
 };
 export const journey: JourneyStep[] = [
 {
@@ -82,7 +82,8 @@ export const journey: JourneyStep[] = [
  recap:'训练需要已知答案；攻击必须把目标答案藏起来。千万不能混淆。',
  known:['A 的真实 K','A 的 P 与 Trace','B 的 P 与 Trace'],unknown:['B 的真实 K 和 V'],
  terms:[{name:'Profiling',meaning:'使用已知密钥的迹线和标签学习泄漏关系'},{name:'Attack',meaning:'对未知目标密钥依据观测评分、排名的阶段'}],
- checkpoint:{prompt:'攻击阶段公式里的 k 是什么？',options:['从目标 B 直接读取的正确密钥','正在尝试的候选密钥字节','已知参考设备 A 的真实密钥'],answer:1,why:['真实 K 是未知的。','正确。逐一尝试 k=0..255，比较证据。','A 的真实 K 用于生成 A 的训练标签，不能冒充 B 的密钥。']},
+ checkpoint:{prompt:'攻击阶段公式里的 k 是什么？',options:['从目标 B 直接读取的正确密钥','正在尝试的候选密钥字节','已知参考设备 A 的真实密钥'],answer:1,why:['真实 K 是未知的。','正确。逐一尝试 k=0..255，比较证据。','A 的真实 K 用于生成 A 的训练标签，不能冒充 B 的密钥。']},activity:'profiles',
+
 },
 {
  id:'labels',chapter:'第五幕 · 训练一个观察者',title:'同一个中间值，为什么能有 256 类或 9 类？',question:'敏感中间值与泄漏模型究竟有什么不同？',
@@ -104,7 +105,8 @@ export const journey: JourneyStep[] = [
  recap:'HW 是“有几个 1”，HD 是“变了几个 bit”，具体选择取决于物理实现。',
  known:['当前新状态','若能识别旧状态则可计算 HD'],unknown:['目标实际变化与哪些电路活动对应'],
  terms:[{name:'HD',meaning:'Hamming Distance；两个比特串中不同 bit 的数量'}],
- checkpoint:{prompt:'某寄存器旧值和新值都是 0x63，HD 是多少？',options:['4','8','0'],answer:2,why:['这是新值的 HW，不是 HD。','旧值与新值没有任何不同的 bit。','正确。没有 bit 翻转。']},
+ checkpoint:{prompt:'某寄存器旧值和新值都是 0x63，HD 是多少？',options:['4','8','0'],answer:2,why:['这是新值的 HW，不是 HD。','旧值与新值没有任何不同的 bit。','正确。没有 bit 翻转。']},activity:'distance',
+
 },
 {
  id:'acquire',chapter:'第六幕 · 信号里寻找证据',title:'一条 Trace 的时间轴从哪里开始？',question:'怎样知道第一轮 SBox 大致在什么位置？',
@@ -137,6 +139,7 @@ export const journey: JourneyStep[] = [
  recap:'先决定你想回答“有没有差异”还是“哪里与指定标签有关”，再选方法。',
  known:['标签 Y（对参考设备）','Fixed/Random 分组（如果设计了）'],unknown:['哪些候选窗口真正提高泛化攻击表现'],
  terms:[{name:'SNR',meaning:'信号（类别间变化）相对组内噪声的比值'},{name:'NICV',meaning:'标签所解释的采样方差占总方差的比例'},{name:'TVLA',meaning:'常用两组统计检验来检测数据相关差异的方法'}],
+ activity:'methods',
  checkpoint:{prompt:'TVLA 在某个采样点出现大峰，可以得出哪个结论？',options:['可以直接确认它是目标 SBox 的最佳 PoI','只说明指定分组存在明显统计差异，需要进一步归因','可以直接读出密钥字节'],answer:1,why:['TVLA 不能自动确定具体中间值泄漏来源。','正确。还要结合时序、标签模型和验证集攻击。','TVLA 不是密钥输出接口。']},activity:'poi'
 },
 {
@@ -148,7 +151,8 @@ export const journey: JourneyStep[] = [
  recap:'神经网络是“物理迹线 → 标签概率”的桥梁，密钥推断在下一步才开始。',
  known:['参考训练 Trace 与标签','已经训练完成的模型','目标 Trace'],unknown:['目标真实标签 V','目标密钥 K'],
  terms:[{name:'分类器',meaning:'根据输入为每种可能类别给出分数或概率的模型'},{name:'Softmax',meaning:'将模型原始分数转成总和为 1 的非负类别分布'},{name:'交叉熵',meaning:'正确类别预测概率越低，惩罚通常越大的常用训练损失'}],
- checkpoint:{prompt:'建模设备密钥始终固定，为什么仍然可能训练 256 类的中间值分类器？',options:['因为每次 Trace 都会自动生成新密钥','因为可以改变明文字节，从而改变 V=SBox(P⊕K)','因为标签直接等于迹线采样点数量'],answer:1,why:['固定参考密钥不需要改变。','正确。公开明文变化会改变中间值。','采样长度与类别标签没有直接关系。']},
+ checkpoint:{prompt:'建模设备密钥始终固定，为什么仍然可能训练 256 类的中间值分类器？',options:['因为每次 Trace 都会自动生成新密钥','因为可以改变明文字节，从而改变 V=SBox(P⊕K)','因为标签直接等于迹线采样点数量'],answer:1,why:['固定参考密钥不需要改变。','正确。公开明文变化会改变中间值。','采样长度与类别标签没有直接关系。']},activity:'training',
+
 },
 {
  id:'guess',chapter:'第八幕 · 真正的密钥猜测',title:'目标密钥不知道，居然还是可以算出 V？',question:'为什么可以枚举候选中间值而不偷看答案？',
